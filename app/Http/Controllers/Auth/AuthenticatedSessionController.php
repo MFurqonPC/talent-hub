@@ -31,7 +31,7 @@ class AuthenticatedSessionController extends Controller
             return redirect()->route('admin.dashboard');
         }
 
-        return redirect()->route('mahasiswa.dashboard');
+        return redirect()->route('mahasiswa.profile.edit');
     }
 
     /**
