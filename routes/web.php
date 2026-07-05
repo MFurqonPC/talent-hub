@@ -24,9 +24,11 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-// Dashboard setelah login
+// Dashboard setelah login/register — otomatis diarahkan sesuai role
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    return auth()->user()->role === 'admin'
+        ? redirect()->route('admin.dashboard')
+        : redirect()->route('mahasiswa.profile.edit');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // ================== ROUTE LOGIN ==================
@@ -47,11 +49,6 @@ Route::middleware('auth')->group(function () {
         ->name('mahasiswa.')
         ->group(function () {
 
-            // Route::get('/dashboard', function () {
-            //     return auth()->user()->role === 'admin'
-            //         ? redirect()->route('admin.dashboard')
-            //         : redirect()->route('mahasiswa.profile.edit');
-            // })->middleware(['auth', 'verified'])->name('dashboard');
             // Talent Profile
             Route::get('/profile', [TalentProfileController::class, 'edit'])
                 ->name('profile.edit');
