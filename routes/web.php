@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\OpportunityController;
 use App\Http\Controllers\Admin\RewardController;
 use App\Http\Controllers\Admin\VerificationController;
+use App\Http\Controllers\DashboardRedirectController;
 use App\Http\Controllers\LeaderboardController;
 use App\Http\Controllers\Mahasiswa\CertificateController;
 use App\Http\Controllers\Mahasiswa\PortfolioController;
@@ -25,12 +26,9 @@ Route::get('/', function () {
 });
 
 // Dashboard setelah login/register — otomatis diarahkan sesuai role
-Route::get('/dashboard', function () {
-    return auth()->user()->role === 'admin'
-        ? redirect()->route('admin.dashboard')
-        : redirect()->route('mahasiswa.profile.edit');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
+Route::get('/dashboard', DashboardRedirectController::class)
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 // ================== ROUTE LOGIN ==================
 Route::middleware('auth')->group(function () {
 
