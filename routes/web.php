@@ -25,9 +25,9 @@ Route::get('/', function () {
 });
 
 // Dashboard setelah login
-// Route::get('/dashboard', function () {
-//     return view('dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 // ================== ROUTE LOGIN ==================
 Route::middleware('auth')->group(function () {
@@ -47,11 +47,11 @@ Route::middleware('auth')->group(function () {
         ->name('mahasiswa.')
         ->group(function () {
 
-            Route::get('/dashboard', function () {
-                return auth()->user()->role === 'admin'
-                    ? redirect()->route('admin.dashboard')
-                    : redirect()->route('mahasiswa.profile.edit');
-            })->middleware(['auth', 'verified'])->name('dashboard');
+            // Route::get('/dashboard', function () {
+            //     return auth()->user()->role === 'admin'
+            //         ? redirect()->route('admin.dashboard')
+            //         : redirect()->route('mahasiswa.profile.edit');
+            // })->middleware(['auth', 'verified'])->name('dashboard');
             // Talent Profile
             Route::get('/profile', [TalentProfileController::class, 'edit'])
                 ->name('profile.edit');
