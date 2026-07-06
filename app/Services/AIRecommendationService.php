@@ -6,7 +6,13 @@ use App\Models\Opportunity;
 use App\Models\User;
 use Illuminate\Support\Collection;
 
-/**
+class AIRecommendationService
+{
+    /**
+     * Mapping skill generik -> skill spesifik yang dianggap setara.
+     * Sesuaikan dengan skill_tags yang dipakai di tabel opportunities.
+     */
+    /**
  * AI Recommendation Engine sederhana berbasis content-matching (skill similarity).
  *
  * Pendekatan: setiap opportunity punya skill_tags (comma-separated).
@@ -17,20 +23,47 @@ use Illuminate\Support\Collection;
  * Tidak butuh API key eksternal, sehingga stabil untuk demo hackathon.
  * Bisa di-upgrade ke pemanggilan LLM (OpenAI/Anthropic) kalau waktu memungkinkan.
  */
-class AIRecommendationService
-{
-    public function recommendOpportunities(User $student, int $limit = 10): Collection
+    private array $skillAliases = [
+        'backend' => ['laravel', 'php', 'mysql', 'nodejs', 'express', 'django', 'python', 'postgresql'],
+        'frontend' => ['react', 'vue', 'javascript', 'html', 'css', 'tailwind', 'bootstrap'],
+        'design' => ['ui/ux', 'figma', 'photoshop', 'canva', 'adobe xd'],
+        'data analyst' => ['data analyst', 'excel', 'python', 'sql', 'tableau', 'power bi'],
+        'mobile developer' => ['flutter', 'kotlin', 'swift', 'react native'],
+        // tambah sesuai kebutuhan
+    ];
+
+    /**
+     * Perluas skill mahasiswa: kalau dia punya skill generik ("backend"),
+     * anggap dia juga "punya" skill spesifik turunannya untuk keperluan matching.
+     */
+    private function expandSkills(array $skills): array
     {
-        $studentSkills = $student->skills()
+        $expanded = $skills;
+        foreach ($skills as $skill) {
+            if (isset($this->skillAliases[$skill])) {
+                $expanded = array_merge($expanded, $this->skillAliases[$skill]);
+            }
+        }
+        return array_unique($expanded);
+    }
+
+    private function getApprovedSkills(User $student): array
+    {
+        $skills = $student->skills()
             ->where('status', 'approved')
             ->pluck('skill_name')
             ->map(fn ($s) => strtolower(trim($s)))
             ->toArray();
 
+        return $this->expandSkills($skills);
+    }
+
+    public function recommendOpportunities(User $student, int $limit = 10): Collection
+    {
+        $studentSkills = $this->getApprovedSkills($student);
         $opportunities = Opportunity::latest()->get();
 
         if (empty($studentSkills)) {
-            // Mahasiswa belum punya skill approved -> tampilkan opportunity terbaru saja
             return $opportunities->take($limit)->map(function ($opp) {
                 $opp->match_score = 0;
                 $opp->matched_skills = [];
@@ -53,18 +86,9 @@ class AIRecommendationService
         ->values();
     }
 
-    /**
-     * Rekomendasi skill yang sebaiknya ditambahkan mahasiswa,
-     * berdasarkan skill yang paling sering diminta opportunity
-     * tapi belum dimiliki mahasiswa. Berguna untuk "gap analysis" sederhana.
-     */
     public function recommendSkillsToLearn(User $student, int $limit = 5): array
     {
-        $studentSkills = $student->skills()
-            ->where('status', 'approved')
-            ->pluck('skill_name')
-            ->map(fn ($s) => strtolower(trim($s)))
-            ->toArray();
+        $studentSkills = $this->getApprovedSkills($student);
 
         $allTags = Opportunity::pluck('skill_tags')
             ->flatMap(fn ($tags) => explode(',', $tags))

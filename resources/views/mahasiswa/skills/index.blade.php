@@ -6,7 +6,7 @@
     </x-slot>
 
     <div class="py-8" x-data="{ showModal: false }">
-        <div class="max-w-5xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
 
             {{-- Notifikasi --}}
             @if (session('success'))

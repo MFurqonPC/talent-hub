@@ -42,5 +42,8 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
     && chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
+RUN echo "upload_max_filesize=3M" >> /usr/local/etc/php/conf.d/uploads.ini \
+    && echo "post_max_size=4M" >> /usr/local/etc/php/conf.d/uploads.ini
+
 EXPOSE 9000
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
