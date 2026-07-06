@@ -165,4 +165,16 @@ Route::middleware(['auth', 'admin'])
             ->name('opportunities.destroy');
     });
 
+Route::get('/debug-ai', function () {
+    $user = auth()->user() ?? \App\Models\User::where('role', 'mahasiswa')->first();
+ 
+    return response()->json([
+        'api_key_terbaca' => !empty(config('services.anthropic.key')),
+        'api_key_prefix' => substr(config('services.anthropic.key') ?? '', 0, 12) . '...',
+        'user_dipakai' => $user?->email,
+        'hasil_ai' => app(\App\Services\AIRecommendationService::class)->getAICareerAdvice($user),
+    ]);
+});
+ 
+
 require __DIR__ . '/auth.php';
