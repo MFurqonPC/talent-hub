@@ -166,15 +166,25 @@ Route::middleware(['auth', 'admin'])
     });
 
 Route::get('/debug-ai', function () {
-    $user = auth()->user() ?? \App\Models\User::where('role', 'mahasiswa')->first();
+    $response = \Illuminate\Support\Facades\Http::timeout(10)
+        ->withHeaders([
+            'x-api-key' => config('services.anthropic.key'),
+            'anthropic-version' => '2023-06-01',
+            'content-type' => 'application/json',
+        ])
+        ->post('https://api.anthropic.com/v1/messages', [
+            'model' => 'claude-3-5-haiku-20241022',
+            'max_tokens' => 100,
+            'messages' => [
+                ['role' => 'user', 'content' => 'Halo, sebutkan angka 1 sampai 3 saja.'],
+            ],
+        ]);
  
     return response()->json([
-        'api_key_terbaca' => !empty(config('services.anthropic.key')),
-        'api_key_prefix' => substr(config('services.anthropic.key') ?? '', 0, 12) . '...',
-        'user_dipakai' => $user?->email,
-        'hasil_ai' => app(\App\Services\AIRecommendationService::class)->getAICareerAdvice($user),
+        'status_code' => $response->status(),
+        'successful' => $response->successful(),
+        'body' => $response->json() ?? $response->body(),
     ]);
 });
- 
 
 require __DIR__ . '/auth.php';
