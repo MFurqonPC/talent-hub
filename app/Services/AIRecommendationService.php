@@ -39,7 +39,24 @@ class AIRecommendationService
 
         return $opportunities->map(function ($opp) use ($studentSkills) {
             $tags = $opp->tagsArray();
-            $matched = array_values(array_intersect($studentSkills, $tags));
+            $matched = [];
+
+            // Partial match: cocokkan kalau skill mahasiswa MENGANDUNG tag,
+            // atau tag MENGANDUNG skill mahasiswa (dua arah), bukan harus sama persis.
+            // Contoh: skill "UI/UX Design" tetap match dengan tag "ui/ux".
+            foreach ($tags as $tag) {
+                foreach ($studentSkills as $skill) {
+                    if ($tag === '' || $skill === '') {
+                        continue;
+                    }
+                    if (str_contains($skill, $tag) || str_contains($tag, $skill)) {
+                        $matched[] = $tag;
+                        break;
+                    }
+                }
+            }
+            $matched = array_values(array_unique($matched));
+
             $score = count($tags) > 0 ? count($matched) / count($tags) : 0;
 
             $opp->match_score = (int) round($score * 100);
