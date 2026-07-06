@@ -11,6 +11,13 @@
                 <p class="text-indigo-100 text-sm mt-1">Sistem mencocokkan skill yang sudah terverifikasi dengan opportunity yang tersedia.</p>
             </div>
 
+            @if (!empty($aiCareerAdvice))
+                <div class="bg-white border border-indigo-100 rounded-xl shadow p-5">
+                    <h3 class="font-semibold text-gray-800 mb-2 flex items-center gap-2">🤖 Saran Karier dari AI</h3>
+                    <p class="text-gray-600 text-sm leading-relaxed">{{ $aiCareerAdvice }}</p>
+                </div>
+            @endif
+
             {{-- Rekomendasi Opportunity --}}
             <div class="space-y-3">
                 <h3 class="font-semibold text-gray-800">🎯 Opportunity yang Cocok Untukmu</h3>
