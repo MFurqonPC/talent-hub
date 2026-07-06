@@ -4,7 +4,7 @@
     </x-slot>
 
     <div class="py-8">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
             <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl shadow p-5">
                 <p class="font-semibold flex items-center gap-2">✨ Rekomendasi dipersonalisasi berdasarkan skill kamu</p>
