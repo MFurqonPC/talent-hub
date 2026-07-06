@@ -4,12 +4,19 @@
     </x-slot>
 
     <div class="py-8">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
             <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl shadow p-5">
                 <p class="font-semibold flex items-center gap-2">✨ Rekomendasi dipersonalisasi berdasarkan skill kamu</p>
                 <p class="text-indigo-100 text-sm mt-1">Sistem mencocokkan skill yang sudah terverifikasi dengan opportunity yang tersedia.</p>
             </div>
+
+            @if (!empty($aiCareerAdvice))
+                <div class="bg-white border border-indigo-100 rounded-xl shadow p-5">
+                    <h3 class="font-semibold text-gray-800 mb-2 flex items-center gap-2">🤖 Saran Karier dari AI</h3>
+                    <p class="text-gray-600 text-sm leading-relaxed">{{ $aiCareerAdvice }}</p>
+                </div>
+            @endif
 
             {{-- Rekomendasi Opportunity --}}
             <div class="space-y-3">

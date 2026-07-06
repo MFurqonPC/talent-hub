@@ -17,7 +17,10 @@ class RecommendationController extends Controller
 
         $recommendations = $this->aiService->recommendOpportunities($student);
         $skillsToLearn = $this->aiService->recommendSkillsToLearn($student);
+        $aiCareerAdvice = $this->aiService->getAICareerAdvice($student);
 
-        return view('mahasiswa.recommendations.index', compact('recommendations', 'skillsToLearn'));
+        return view('mahasiswa.recommendations.index', compact(
+            'recommendations', 'skillsToLearn', 'aiCareerAdvice'
+        ));
     }
 }

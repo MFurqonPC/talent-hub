@@ -5,14 +5,9 @@ namespace App\Services;
 use App\Models\Opportunity;
 use App\Models\User;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Http;
 
-class AIRecommendationService
-{
-    /**
-     * Mapping skill generik -> skill spesifik yang dianggap setara.
-     * Sesuaikan dengan skill_tags yang dipakai di tabel opportunities.
-     */
-    /**
+/**
  * AI Recommendation Engine sederhana berbasis content-matching (skill similarity).
  *
  * Pendekatan: setiap opportunity punya skill_tags (comma-separated).
@@ -23,47 +18,20 @@ class AIRecommendationService
  * Tidak butuh API key eksternal, sehingga stabil untuk demo hackathon.
  * Bisa di-upgrade ke pemanggilan LLM (OpenAI/Anthropic) kalau waktu memungkinkan.
  */
-    private array $skillAliases = [
-        'backend' => ['laravel', 'php', 'mysql', 'nodejs', 'express', 'django', 'python', 'postgresql'],
-        'frontend' => ['react', 'vue', 'javascript', 'html', 'css', 'tailwind', 'bootstrap'],
-        'design' => ['ui/ux', 'figma', 'photoshop', 'canva', 'adobe xd'],
-        'data analyst' => ['data analyst', 'excel', 'python', 'sql', 'tableau', 'power bi'],
-        'mobile developer' => ['flutter', 'kotlin', 'swift', 'react native'],
-        // tambah sesuai kebutuhan
-    ];
-
-    /**
-     * Perluas skill mahasiswa: kalau dia punya skill generik ("backend"),
-     * anggap dia juga "punya" skill spesifik turunannya untuk keperluan matching.
-     */
-    private function expandSkills(array $skills): array
+class AIRecommendationService
+{
+    public function recommendOpportunities(User $student, int $limit = 10): Collection
     {
-        $expanded = $skills;
-        foreach ($skills as $skill) {
-            if (isset($this->skillAliases[$skill])) {
-                $expanded = array_merge($expanded, $this->skillAliases[$skill]);
-            }
-        }
-        return array_unique($expanded);
-    }
-
-    private function getApprovedSkills(User $student): array
-    {
-        $skills = $student->skills()
+        $studentSkills = $student->skills()
             ->where('status', 'approved')
             ->pluck('skill_name')
             ->map(fn ($s) => strtolower(trim($s)))
             ->toArray();
 
-        return $this->expandSkills($skills);
-    }
-
-    public function recommendOpportunities(User $student, int $limit = 10): Collection
-    {
-        $studentSkills = $this->getApprovedSkills($student);
         $opportunities = Opportunity::latest()->get();
 
         if (empty($studentSkills)) {
+            // Mahasiswa belum punya skill approved -> tampilkan opportunity terbaru saja
             return $opportunities->take($limit)->map(function ($opp) {
                 $opp->match_score = 0;
                 $opp->matched_skills = [];
@@ -86,9 +54,18 @@ class AIRecommendationService
         ->values();
     }
 
+    /**
+     * Rekomendasi skill yang sebaiknya ditambahkan mahasiswa,
+     * berdasarkan skill yang paling sering diminta opportunity
+     * tapi belum dimiliki mahasiswa. Berguna untuk "gap analysis" sederhana.
+     */
     public function recommendSkillsToLearn(User $student, int $limit = 5): array
     {
-        $studentSkills = $this->getApprovedSkills($student);
+        $studentSkills = $student->skills()
+            ->where('status', 'approved')
+            ->pluck('skill_name')
+            ->map(fn ($s) => strtolower(trim($s)))
+            ->toArray();
 
         $allTags = Opportunity::pluck('skill_tags')
             ->flatMap(fn ($tags) => explode(',', $tags))
@@ -103,5 +80,53 @@ class AIRecommendationService
             ->take($limit)
             ->keys()
             ->toArray();
+    }
+
+    /**
+     * OPSI B — Rekomendasi karier naratif memakai LLM (Anthropic Claude).
+     * Dipanggil terpisah dari recommendOpportunities() supaya kalau API
+     * gagal/lambat/kuota habis, halaman tetap tampil normal dengan
+     * rekomendasi rule-based di atas (fallback aman untuk demo).
+     */
+    public function getAICareerAdvice(User $student): ?string
+    {
+        if (empty(config('services.anthropic.key'))) {
+            return null; // API key belum diset, skip diam-diam
+        }
+
+        $skills = $student->skills()->where('status', 'approved')->pluck('skill_name')->implode(', ');
+        $certificates = $student->certificates()->where('status', 'approved')->pluck('title')->implode(', ');
+        $points = $student->points;
+
+        $prompt = "Mahasiswa ini punya skill terverifikasi: " . ($skills ?: 'belum ada') . ". "
+            . "Sertifikat: " . ($certificates ?: 'belum ada') . ". "
+            . "Total poin kontribusi: {$points}. "
+            . "Berikan 2-3 kalimat saran pengembangan karier yang singkat, memotivasi, "
+            . "dan actionable dalam Bahasa Indonesia. Jangan gunakan format list, cukup paragraf singkat.";
+
+        try {
+            $response = Http::timeout(10)
+                ->withHeaders([
+                    'x-api-key' => config('services.anthropic.key'),
+                    'anthropic-version' => '2023-06-01',
+                    'content-type' => 'application/json',
+                ])
+                ->post('https://api.anthropic.com/v1/messages', [
+                    'model' => 'claude-3-5-haiku-20241022',
+                    'max_tokens' => 300,
+                    'messages' => [
+                        ['role' => 'user', 'content' => $prompt],
+                    ],
+                ]);
+
+            if ($response->successful()) {
+                return $response->json('content.0.text');
+            }
+        } catch (\Throwable $e) {
+            // Diam-diam gagal, biar halaman tetap jalan pakai rule-based saja
+            report($e);
+        }
+
+        return null;
     }
 }
