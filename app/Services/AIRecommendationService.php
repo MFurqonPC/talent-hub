@@ -16,7 +16,6 @@ use Illuminate\Support\Facades\Http;
  * dibagi jumlah tag opportunity -> menghasilkan persentase kecocokan.
  *
  * Tidak butuh API key eksternal, sehingga stabil untuk demo hackathon.
- * Bisa di-upgrade ke pemanggilan LLM (OpenAI/Anthropic) kalau waktu memungkinkan.
  */
 class AIRecommendationService
 {
@@ -31,7 +30,6 @@ class AIRecommendationService
         $opportunities = Opportunity::latest()->get();
 
         if (empty($studentSkills)) {
-            // Mahasiswa belum punya skill approved -> tampilkan opportunity terbaru saja
             return $opportunities->take($limit)->map(function ($opp) {
                 $opp->match_score = 0;
                 $opp->matched_skills = [];
@@ -83,14 +81,17 @@ class AIRecommendationService
     }
 
     /**
-     * OPSI B — Rekomendasi karier naratif memakai LLM (Anthropic Claude).
+     * OPSI B — Rekomendasi karier naratif memakai LLM lewat Groq
+     * (gratis, tanpa kartu kredit, https://console.groq.com).
+     * Endpoint-nya OpenAI-compatible, jadi formatnya mirip banget sama OpenAI API.
+     *
      * Dipanggil terpisah dari recommendOpportunities() supaya kalau API
      * gagal/lambat/kuota habis, halaman tetap tampil normal dengan
      * rekomendasi rule-based di atas (fallback aman untuk demo).
      */
     public function getAICareerAdvice(User $student): ?string
     {
-        if (empty(config('services.anthropic.key'))) {
+        if (empty(config('services.groq.key'))) {
             return null; // API key belum diset, skip diam-diam
         }
 
@@ -106,13 +107,9 @@ class AIRecommendationService
 
         try {
             $response = Http::timeout(10)
-                ->withHeaders([
-                    'x-api-key' => config('services.anthropic.key'),
-                    'anthropic-version' => '2023-06-01',
-                    'content-type' => 'application/json',
-                ])
-                ->post('https://api.anthropic.com/v1/messages', [
-                    'model' => 'claude-3-5-haiku-20241022',
+                ->withToken(config('services.groq.key'))
+                ->post('https://api.groq.com/openai/v1/chat/completions', [
+                    'model' => 'llama-3.3-70b-versatile',
                     'max_tokens' => 300,
                     'messages' => [
                         ['role' => 'user', 'content' => $prompt],
@@ -120,7 +117,7 @@ class AIRecommendationService
                 ]);
 
             if ($response->successful()) {
-                return $response->json('content.0.text');
+                return $response->json('choices.0.message.content');
             }
         } catch (\Throwable $e) {
             // Diam-diam gagal, biar halaman tetap jalan pakai rule-based saja

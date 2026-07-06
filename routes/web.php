@@ -165,26 +165,26 @@ Route::middleware(['auth', 'admin'])
             ->name('opportunities.destroy');
     });
 
-Route::get('/debug-ai', function () {
-    $response = \Illuminate\Support\Facades\Http::timeout(10)
-        ->withHeaders([
-            'x-api-key' => config('services.anthropic.key'),
-            'anthropic-version' => '2023-06-01',
-            'content-type' => 'application/json',
-        ])
-        ->post('https://api.anthropic.com/v1/messages', [
-            'model' => 'claude-3-5-haiku-20241022',
-            'max_tokens' => 100,
-            'messages' => [
-                ['role' => 'user', 'content' => 'Halo, sebutkan angka 1 sampai 3 saja.'],
-            ],
-        ]);
+// Route::get('/debug-ai', function () {
+//     $response = \Illuminate\Support\Facades\Http::timeout(10)
+//         ->withHeaders([
+//             'x-api-key' => config('services.anthropic.key'),
+//             'anthropic-version' => '2023-06-01',
+//             'content-type' => 'application/json',
+//         ])
+//         ->post('https://api.anthropic.com/v1/messages', [
+//             'model' => 'claude-3-5-haiku-20241022',
+//             'max_tokens' => 100,
+//             'messages' => [
+//                 ['role' => 'user', 'content' => 'Halo, sebutkan angka 1 sampai 3 saja.'],
+//             ],
+//         ]);
  
-    return response()->json([
-        'status_code' => $response->status(),
-        'successful' => $response->successful(),
-        'body' => $response->json() ?? $response->body(),
-    ]);
-});
+//     return response()->json([
+//         'status_code' => $response->status(),
+//         'successful' => $response->successful(),
+//         'body' => $response->json() ?? $response->body(),
+//     ]);
+// });
 
 require __DIR__ . '/auth.php';
