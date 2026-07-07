@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Mahasiswa;
 use App\Http\Controllers\Controller;
 use App\Models\Certificate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class CertificateController extends Controller
 {
@@ -43,6 +44,38 @@ class CertificateController extends Controller
         return redirect()
             ->route('mahasiswa.certificates.index')
             ->with('success', 'Sertifikat berhasil diajukan, menunggu verifikasi admin.');
+    }
+
+    public function update(Request $request, Certificate $certificate)
+    {
+        abort_unless($certificate->student_id === auth()->id(), 403);
+        abort_unless($certificate->status === 'pending', 403, 'Sertifikat yang sudah diverifikasi tidak dapat diubah.');
+
+        $validated = $request->validate([
+            'title' => ['required', 'string', 'max:255'],
+            'category' => ['required', 'in:lokal,regional,nasional,internasional'],
+            'file_path' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:2048'],
+        ], [
+            'title.required' => 'Nama sertifikat wajib diisi.',
+            'category.required' => 'Kategori sertifikat wajib dipilih.',
+        ]);
+
+        if ($request->hasFile('file_path')) {
+            if ($certificate->file_path) {
+                Storage::disk('public')->delete($certificate->file_path);
+            }
+            $validated['file_path'] = $request->file('file_path')->store('certificates', 'public');
+        }
+
+        $certificate->update([
+            'title' => $validated['title'],
+            'category' => $validated['category'],
+            'file_path' => $validated['file_path'] ?? $certificate->file_path,
+        ]);
+
+        return redirect()
+            ->route('mahasiswa.certificates.index')
+            ->with('success', 'Sertifikat berhasil diperbarui.');
     }
 
     public function destroy(Certificate $certificate)

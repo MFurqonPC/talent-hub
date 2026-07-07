@@ -3,8 +3,8 @@
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ __('Portfolio Saya') }}</h2>
     </x-slot>
 
-    <div class="py-8" x-data="{ showModal: false }">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+    <div class="py-8" x-data="{ showModal: false, editing: null, editForm: {} }">
+        <div class="max-w-5xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
             @if (session('success'))
                 <div class="bg-green-100 border border-green-300 text-green-800 px-4 py-3 rounded-lg">{{ session('success') }}</div>
@@ -52,10 +52,17 @@
                                 <td class="px-4 py-3 font-semibold text-gray-800">{{ $pf->point_value }}</td>
                                 <td class="px-4 py-3">
                                     @if ($pf->status === 'pending')
-                                        <form action="{{ route('mahasiswa.portfolios.destroy', $pf) }}" method="POST" onsubmit="return confirm('Batalkan pengajuan ini?')">
-                                            @csrf @method('DELETE')
-                                            <button class="text-red-600 hover:underline text-xs">Batalkan</button>
-                                        </form>
+                                        <div class="flex items-center gap-3">
+                                            <button
+                                                @click="showModal = true; editing = {{ $pf->id }}; editForm = { title: {{ Js::from($pf->title) }}, category: {{ Js::from($pf->category) }}, description: {{ Js::from($pf->description) }}, link: {{ Js::from($pf->link) }} }"
+                                                class="text-indigo-600 hover:underline text-xs">
+                                                Edit
+                                            </button>
+                                            <form action="{{ route('mahasiswa.portfolios.destroy', $pf) }}" method="POST" onsubmit="return confirm('Batalkan pengajuan ini?')">
+                                                @csrf @method('DELETE')
+                                                <button class="text-red-600 hover:underline text-xs">Batalkan</button>
+                                            </form>
+                                        </div>
                                     @else
                                         <span class="text-gray-400 text-xs">-</span>
                                     @endif
@@ -71,8 +78,10 @@
 
         <div x-show="showModal" x-cloak class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
             <div @click.away="showModal = false" class="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4">Tambah Portfolio</h3>
-                <form action="{{ route('mahasiswa.portfolios.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4" x-text="editing ? 'Edit Portfolio' : 'Tambah Portfolio'"></h3>
+
+                {{-- Form Tambah --}}
+                <form x-show="!editing" action="{{ route('mahasiswa.portfolios.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
                     @csrf
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Judul Portfolio</label>
@@ -105,6 +114,43 @@
                         <button type="submit" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium">Ajukan Portfolio</button>
                     </div>
                 </form>
+
+                {{-- Form Edit (dinamis, method PUT) --}}
+                <template x-if="editing">
+                    <form :action="'/mahasiswa/portfolios/' + editing" method="POST" enctype="multipart/form-data" class="space-y-4">
+                        @csrf
+                        @method('PUT')
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Judul Portfolio</label>
+                            <input type="text" name="title" x-model="editForm.title" required class="w-full rounded-lg border-gray-300 focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
+                            <select name="category" x-model="editForm.category" required class="w-full rounded-lg border-gray-300 focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="personal">Personal</option>
+                                <option value="freelance">Freelance</option>
+                                <option value="industri">Industri</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi (opsional)</label>
+                            <textarea name="description" x-model="editForm.description" rows="2" class="w-full rounded-lg border-gray-300 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Link (GitHub, Behance, dll)</label>
+                            <input type="url" name="link" x-model="editForm.link" class="w-full rounded-lg border-gray-300 focus:ring-indigo-500 focus:border-indigo-500" placeholder="https://...">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Ganti File (opsional)</label>
+                            <input type="file" name="file_path" accept=".pdf,.jpg,.jpeg,.png" class="w-full text-sm text-gray-600">
+                            <p class="text-xs text-gray-400 mt-1">Kosongkan kalau tidak ingin mengganti file lama. Wajib isi Link ATAU sudah ada file sebelumnya.</p>
+                        </div>
+                        <div class="flex justify-end gap-2 pt-2">
+                            <button type="button" @click="showModal = false" class="px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-100 text-sm">Batal</button>
+                            <button type="submit" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium">Update Portfolio</button>
+                        </div>
+                    </form>
+                </template>
             </div>
         </div>
     </div>

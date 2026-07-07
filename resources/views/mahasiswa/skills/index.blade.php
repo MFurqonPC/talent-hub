@@ -5,8 +5,8 @@
         </h2>
     </x-slot>
 
-    <div class="py-8" x-data="{ showModal: false }">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+    <div class="py-8" x-data="{ showModal: false, editing: null, editForm: {} }">
+        <div class="max-w-5xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
             {{-- Notifikasi --}}
             @if (session('success'))
@@ -28,7 +28,7 @@
             <div class="flex justify-between items-center">
                 <p class="text-gray-600 text-sm">Kelola daftar skill kamu. Skill baru akan berstatus
                     <span class="font-medium text-yellow-600">Pending</span> sampai diverifikasi admin.</p>
-                <button @click="showModal = true"
+                <button @click="showModal = true; editing = null"
                     class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium shadow">
                     + Tambah Skill
                 </button>
@@ -75,12 +75,19 @@
                                 <td class="px-4 py-3 font-semibold text-gray-800">{{ $skill->point_value }}</td>
                                 <td class="px-4 py-3">
                                     @if ($skill->status === 'pending')
-                                        <form action="{{ route('mahasiswa.skills.destroy', $skill) }}" method="POST"
-                                            onsubmit="return confirm('Batalkan pengajuan skill ini?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button class="text-red-600 hover:underline text-xs">Batalkan</button>
-                                        </form>
+                                        <div class="flex items-center gap-3">
+                                            <button
+                                                @click="showModal = true; editing = {{ $skill->id }}; editForm = { skill_name: {{ Js::from($skill->skill_name) }}, level: {{ Js::from($skill->level) }} }"
+                                                class="text-indigo-600 hover:underline text-xs">
+                                                Edit
+                                            </button>
+                                            <form action="{{ route('mahasiswa.skills.destroy', $skill) }}" method="POST"
+                                                onsubmit="return confirm('Batalkan pengajuan skill ini?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button class="text-red-600 hover:underline text-xs">Batalkan</button>
+                                            </form>
+                                        </div>
                                     @else
                                         <span class="text-gray-400 text-xs">-</span>
                                     @endif
@@ -98,12 +105,14 @@
             </div>
         </div>
 
-        {{-- Modal tambah skill --}}
+        {{-- Modal tambah/edit skill --}}
         <div x-show="showModal" x-cloak
             class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
             <div @click.away="showModal = false" class="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4">Tambah Skill Baru</h3>
-                <form action="{{ route('mahasiswa.skills.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4" x-text="editing ? 'Edit Skill' : 'Tambah Skill Baru'"></h3>
+
+                {{-- Form Tambah --}}
+                <form x-show="!editing" action="{{ route('mahasiswa.skills.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
                     @csrf
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Nama Skill</label>
@@ -135,6 +144,42 @@
                         </button>
                     </div>
                 </form>
+
+                {{-- Form Edit (dinamis per skill, method PUT) --}}
+                <template x-if="editing">
+                    <form :action="'/mahasiswa/skills/' + editing" method="POST" enctype="multipart/form-data" class="space-y-4">
+                        @csrf
+                        @method('PUT')
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nama Skill</label>
+                            <input type="text" name="skill_name" x-model="editForm.skill_name" required
+                                class="w-full rounded-lg border-gray-300 focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Level (opsional)</label>
+                            <select name="level" x-model="editForm.level" class="w-full rounded-lg border-gray-300 focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">-- Pilih Level --</option>
+                                <option value="Beginner">Beginner</option>
+                                <option value="Intermediate">Intermediate</option>
+                                <option value="Advanced">Advanced</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Ganti Bukti Pendukung (opsional)</label>
+                            <input type="file" name="evidence_file" accept=".pdf,.jpg,.jpeg,.png"
+                                class="w-full text-sm text-gray-600">
+                            <p class="text-xs text-gray-400 mt-1">Kosongkan kalau tidak ingin mengganti file lama.</p>
+                        </div>
+                        <div class="flex justify-end gap-2 pt-2">
+                            <button type="button" @click="showModal = false"
+                                class="px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-100 text-sm">Batal</button>
+                            <button type="submit"
+                                class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium">
+                                Update Skill
+                            </button>
+                        </div>
+                    </form>
+                </template>
             </div>
         </div>
     </div>
