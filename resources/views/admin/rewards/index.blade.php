@@ -3,8 +3,8 @@
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ __('Reward Management') }}</h2>
     </x-slot>
 
-    <div class="py-8" x-data="{ showModal: false, editing: null, form: {} }">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+    <div class="py-8" x-data="{ showModal: false, editing: null, form: {}, tab: 'rewards' }">
+        <div class="max-w-6xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
             @if (session('success'))
                 <div class="bg-green-100 border border-green-300 text-green-800 px-4 py-3 rounded-lg">{{ session('success') }}</div>
@@ -17,13 +17,32 @@
                 </div>
             @endif
 
-            <div class="flex justify-between items-center">
-                <p class="text-gray-600 text-sm">Kelola daftar reward yang bisa diklaim mahasiswa dengan poin mereka.</p>
-                <button @click="showModal = true; editing = null"
-                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium shadow">
-                    + Tambah Reward
+            {{-- Tabs --}}
+            <div class="flex gap-2 border-b border-gray-200">
+                <button @click="tab = 'rewards'"
+                    :class="tab === 'rewards' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
+                    class="px-4 py-2 text-sm font-medium border-b-2">
+                    Daftar Reward
+                </button>
+                <button @click="tab = 'claims'"
+                    :class="tab === 'claims' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
+                    class="px-4 py-2 text-sm font-medium border-b-2">
+                    Klaim Mahasiswa
+                    @php $pendingCount = $claims->where('status', 'pending')->count(); @endphp
+                    @if ($pendingCount > 0)
+                        <span class="ml-1 text-xs bg-yellow-100 text-yellow-700 rounded-full px-2 py-0.5">{{ $pendingCount }}</span>
+                    @endif
                 </button>
             </div>
+
+            {{-- TAB: DAFTAR REWARD --}}
+            <div x-show="tab === 'rewards'" x-cloak class="space-y-6">
+                <div class="flex justify-end">
+                    <button @click="showModal = true; editing = null"
+                        class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium shadow">
+                        + Tambah Reward
+                    </button>
+                </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 @forelse ($rewards as $reward)
@@ -59,6 +78,67 @@
                 @empty
                     <p class="text-gray-400 text-sm col-span-3 text-center py-8">Belum ada reward. Tambahkan reward pertama!</p>
                 @endforelse
+                </div>
+            </div>
+
+            {{-- TAB: KLAIM MAHASISWA --}}
+            <div x-show="tab === 'claims'" x-cloak class="bg-white shadow rounded-xl overflow-x-auto">
+                <table class="min-w-full text-sm text-left">
+                    <thead class="bg-gray-50 text-gray-600 uppercase text-xs">
+                        <tr>
+                            <th class="px-4 py-3">Mahasiswa</th>
+                            <th class="px-4 py-3">Reward</th>
+                            <th class="px-4 py-3">Poin</th>
+                            <th class="px-4 py-3">Tanggal Klaim</th>
+                            <th class="px-4 py-3">Status</th>
+                            <th class="px-4 py-3 w-56">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        @forelse ($claims as $claim)
+                            <tr>
+                                <td class="px-4 py-3">
+                                    <div class="font-medium text-gray-800">{{ $claim->student->name }}</div>
+                                    <div class="text-gray-400 text-xs">{{ $claim->student->email }}</div>
+                                </td>
+                                <td class="px-4 py-3 text-gray-700">{{ $claim->reward->title ?? '-' }}</td>
+                                <td class="px-4 py-3 text-gray-600">{{ $claim->reward->points_required ?? '-' }}</td>
+                                <td class="px-4 py-3 text-gray-500 text-xs">{{ $claim->claimed_at?->diffForHumans() }}</td>
+                                <td class="px-4 py-3">
+                                    @php
+                                        $badge = ['pending' => 'bg-yellow-100 text-yellow-700', 'approved' => 'bg-blue-100 text-blue-700', 'completed' => 'bg-green-100 text-green-700'][$claim->status];
+                                    @endphp
+                                    <span class="px-2 py-1 rounded-full text-xs font-medium {{ $badge }}">{{ ucfirst($claim->status) }}</span>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-2">
+                                        @if ($claim->status === 'pending')
+                                            <form action="{{ route('admin.reward-claims.update', $claim) }}" method="POST">
+                                                @csrf @method('PATCH')
+                                                <input type="hidden" name="status" value="approved">
+                                                <button class="bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-medium px-3 py-1.5 rounded-lg">
+                                                    Tandai Approved
+                                                </button>
+                                            </form>
+                                        @elseif ($claim->status === 'approved')
+                                            <form action="{{ route('admin.reward-claims.update', $claim) }}" method="POST">
+                                                @csrf @method('PATCH')
+                                                <input type="hidden" name="status" value="completed">
+                                                <button class="bg-green-100 hover:bg-green-200 text-green-700 text-xs font-medium px-3 py-1.5 rounded-lg">
+                                                    Tandai Selesai
+                                                </button>
+                                            </form>
+                                        @else
+                                            <span class="text-gray-400 text-xs">Sudah selesai</span>
+                                        @endif
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="6" class="px-4 py-6 text-center text-gray-400">Belum ada klaim reward dari mahasiswa.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
 

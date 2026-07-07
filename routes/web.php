@@ -154,6 +154,9 @@ Route::middleware(['auth', 'admin'])
         Route::delete('/rewards/{reward}', [RewardController::class, 'destroy'])
             ->name('rewards.destroy');
 
+        Route::patch('/reward-claims/{claim}', [RewardController::class, 'updateClaimStatus'])
+            ->name('reward-claims.update');
+
         // ================== OPPORTUNITY MANAGEMENT ==================
         Route::get('/opportunities', [OpportunityController::class, 'index'])
             ->name('opportunities.index');
@@ -179,7 +182,7 @@ Route::middleware(['auth', 'admin'])
 //                 ['role' => 'user', 'content' => 'Halo, sebutkan angka 1 sampai 3 saja.'],
 //             ],
 //         ]);
- 
+
 //     return response()->json([
 //         'status_code' => $response->status(),
 //         'successful' => $response->successful(),

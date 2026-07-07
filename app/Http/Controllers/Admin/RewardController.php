@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Reward;
+use App\Models\RewardClaim;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -12,7 +13,13 @@ class RewardController extends Controller
     public function index()
     {
         $rewards = Reward::latest()->get();
-        return view('admin.rewards.index', compact('rewards'));
+
+        // Klaim yang perlu ditindaklanjuti admin, ditampilkan sebagai tab terpisah
+        $claims = RewardClaim::with(['student', 'reward'])
+            ->latest()
+            ->get();
+
+        return view('admin.rewards.index', compact('rewards', 'claims'));
     }
 
     public function store(Request $request)
@@ -68,5 +75,20 @@ class RewardController extends Controller
         $reward->delete();
 
         return back()->with('success', 'Reward berhasil dihapus.');
+    }
+
+    /**
+     * Update status klaim reward: pending -> approved -> completed.
+     * Admin manual konfirmasi setelah reward fisik/digital diserahkan ke mahasiswa.
+     */
+    public function updateClaimStatus(Request $request, RewardClaim $claim)
+    {
+        $validated = $request->validate([
+            'status' => ['required', 'in:pending,approved,completed'],
+        ]);
+
+        $claim->update(['status' => $validated['status']]);
+
+        return back()->with('success', "Status klaim '{$claim->reward->title}' diupdate jadi " . ucfirst($validated['status']) . ".");
     }
 }
