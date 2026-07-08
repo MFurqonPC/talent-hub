@@ -61,6 +61,9 @@ Route::middleware('auth')->group(function () {
             Route::post('/skills', [SkillController::class, 'store'])
                 ->name('skills.store');
 
+            Route::put('/skills/{skill}', [SkillController::class, 'update'])
+                ->name('skills.update');
+
             Route::delete('/skills/{skill}', [SkillController::class, 'destroy'])
                 ->name('skills.destroy');
 
@@ -71,6 +74,9 @@ Route::middleware('auth')->group(function () {
             Route::post('/certificates', [CertificateController::class, 'store'])
                 ->name('certificates.store');
 
+            Route::put('/certificates/{certificate}', [CertificateController::class, 'update'])
+                ->name('certificates.update');
+
             Route::delete('/certificates/{certificate}', [CertificateController::class, 'destroy'])
                 ->name('certificates.destroy');
 
@@ -80,6 +86,9 @@ Route::middleware('auth')->group(function () {
 
             Route::post('/portfolios', [PortfolioController::class, 'store'])
                 ->name('portfolios.store');
+
+            Route::put('/portfolios/{portfolio}', [PortfolioController::class, 'update'])
+                ->name('portfolios.update');
 
             Route::delete('/portfolios/{portfolio}', [PortfolioController::class, 'destroy'])
                 ->name('portfolios.destroy');
