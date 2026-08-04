@@ -257,10 +257,12 @@
     </section>
 
     {{-- Tentang / Latar belakang --}}
-    <section class="bg-white">
-        <div class="max-w-4xl mx-auto px-6 py-20">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-10 items-start uth-reveal">
-                <div class="md:col-span-2 space-y-4">
+    <section class="relative bg-white overflow-hidden">
+        <div class="absolute inset-0 uth-dotgrid opacity-60 [mask-image:radial-gradient(ellipse_55%_45%_at_15%_50%,#000_35%,transparent_100%)]"></div>
+
+        <div class="relative max-w-4xl mx-auto px-6 py-20">
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-10 items-start uth-reveal">
+                <div class="md:col-span-3 space-y-5">
                     <span class="inline-flex items-center gap-1.5 bg-indigo-100 text-indigo-700 text-xs font-semibold px-3 py-1 rounded-full">
                         <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M8 21h8M12 17v4"/>
@@ -270,31 +272,43 @@
                         </svg>
                         Tentang Project Ini
                     </span>
-                    <h2 class="uth-display text-2xl sm:text-3xl font-bold text-slate-900">
+                    <h2 class="uth-display text-2xl sm:text-3xl font-bold text-slate-900 leading-tight">
                         Dibangun untuk TopRank Logic AI Development #3
                     </h2>
                     <p class="text-slate-500 leading-relaxed">
-                        University Talent Hub dikembangkan sebagai Minimum Viable Product (MVP) untuk menjawab
-                        study case pada kompetisi <span class="font-medium text-slate-700">TopRank Logic AI Development #3</span>:
-                        membangun ekosistem talenta mahasiswa berbasis gamifikasi. Platform ini dirancang untuk
-                        membantu perguruan tinggi memetakan, mengembangkan, dan mempertemukan talenta mahasiswa
-                        dengan berbagai peluang — lengkap dengan sistem verifikasi, poin, leaderboard, reward,
-                        hingga rekomendasi berbasis AI.
+                        University Talent Hub adalah <span class="font-medium text-slate-700">Minimum Viable Product (MVP)</span> yang
+                        menjawab study case kompetisi <span class="font-medium text-slate-700">TopRank Logic AI Development #3</span>:
+                        membangun ekosistem talenta mahasiswa berbasis gamifikasi — dari verifikasi skill & portofolio,
+                        sistem poin dan leaderboard, katalog reward, hingga rekomendasi opportunity berbasis AI.
                     </p>
-                </div>
-                <div class="bg-white rounded-xl shadow-md shadow-slate-100 border border-slate-100 p-5 space-y-3">
-                    <div class="flex items-center gap-3">
-                        <div class="w-11 h-11 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 text-white flex items-center justify-center font-semibold text-sm uth-display">
-                            MF
-                        </div>
-                        <div>
-                            <p class="font-semibold text-slate-800 text-sm">Mohammad Furqon Putra Choir</p>
-                            <p class="text-slate-500 text-xs">D3 Teknik Informatika</p>
-                        </div>
+                    <div class="flex flex-wrap gap-2 pt-1">
+                        @foreach (['Laravel', 'Blade', 'Tailwind CSS', 'AI Recommendation'] as $tech)
+                            <span class="text-xs font-medium bg-slate-100 text-slate-600 px-3 py-1 rounded-full">{{ $tech }}</span>
+                        @endforeach
                     </div>
-                    <p class="text-slate-400 text-xs leading-relaxed">
-                        Dikembangkan sebagai peserta pada kompetisi TopRank Logic AI Development #3.
-                    </p>
+                </div>
+
+                <div class="md:col-span-2 rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-700 p-[1px] shadow-lg shadow-indigo-100">
+                    <div class="bg-white rounded-2xl p-5 space-y-4 h-full">
+                        <span class="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wide text-indigo-600">
+                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 6 9 17l-5-5"/>
+                            </svg>
+                            Peserta Hackathon
+                        </span>
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 text-white flex items-center justify-center font-semibold uth-display flex-shrink-0">
+                                MF
+                            </div>
+                            <div>
+                                <p class="font-semibold text-slate-800 text-sm uth-display">Mohammad Furqon Putra Choir</p>
+                                <p class="text-slate-500 text-xs">D3 Teknik Informatika</p>
+                            </div>
+                        </div>
+                        <p class="text-slate-400 text-xs leading-relaxed border-t border-slate-100 pt-3">
+                            Merancang dan membangun University Talent Hub secara solo selama TopRank Logic AI Development #3 berlangsung.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
