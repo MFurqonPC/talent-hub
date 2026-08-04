@@ -73,7 +73,7 @@
                         <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
                         </svg>
-                        {{ auth()->user()->points }}
+                        {{ auth()->user()->points }} pts
                     </div>
                 @endif
                 <button @click="open = !open" class="p-2 text-slate-500 hover:text-slate-700 rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
