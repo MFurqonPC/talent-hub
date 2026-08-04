@@ -1,14 +1,9 @@
 <x-app-layout>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
-        .uth-display { font-family: 'Sora', ui-sans-serif, sans-serif; letter-spacing: -0.02em; }
-    </style>
-
     <x-slot name="header">
-        <h2 class="uth-display font-bold text-xl text-slate-800 leading-tight">{{ __('Talent Profile') }}</h2>
+        <h2 class="uth-display font-bold text-lg sm:text-xl text-slate-800 leading-tight">{{ __('Talent Profile') }}</h2>
     </x-slot>
 
-    <div class="py-8">
+    <div class="py-6 sm:py-8">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
 
             @if (session('success'))
