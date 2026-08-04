@@ -16,12 +16,12 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
         <style>
-            :root { --font-display: 'Sora', ui-sans-serif, sans-serif; --font-body: 'Inter', ui-sans-serif, sans-serif; }
-            body { font-family: var(--font-body); }
+            :root { --font-display: 'Sora', ui-sans-serif, sans-serif; }
+            body { font-family: 'Inter', ui-sans-serif, sans-serif; }
             .uth-display { font-family: var(--font-display); letter-spacing: -0.02em; }
         </style>
     </head>
-    <body class="font-sans antialiased">
+    <body class="antialiased">
         <div class="min-h-screen bg-slate-50">
             @include('layouts.navigation')
 
