@@ -1,10 +1,10 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="uth-display font-bold text-xl text-slate-800 leading-tight">{{ __('Sertifikat Saya') }}</h2>
+        <h2 class="uth-display font-bold text-lg sm:text-xl text-slate-800 leading-tight">{{ __('Sertifikat Saya') }}</h2>
     </x-slot>
 
-    <div class="py-8" x-data="{ showModal: false, editing: null, editForm: {} }">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+    <div class="py-6 sm:py-8" x-data="{ showModal: false, editing: null, editForm: {} }">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
 
             @if (session('success'))
                 <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-xl text-sm">{{ session('success') }}</div>
