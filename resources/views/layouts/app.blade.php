@@ -4,6 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        <meta name="format-detection" content="telephone=no, date=no, address=no, email=no, url=no">
         <title>{{ config('app.name', 'University Talent Hub') }}</title>
         <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 
@@ -28,7 +29,7 @@
             {{-- Page Heading --}}
             @if (isset($header))
                 <header class="bg-white border-b border-slate-100">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                    <div class="max-w-7xl mx-auto py-4 sm:py-6 px-4 sm:px-6 lg:px-8">
                         {{ $header }}
                     </div>
                 </header>
