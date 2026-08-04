@@ -1,17 +1,12 @@
 <x-app-layout>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
-        .uth-display { font-family: 'Sora', ui-sans-serif, sans-serif; letter-spacing: -0.02em; }
-    </style>
-
     <x-slot name="header">
-        <h2 class="uth-display font-bold text-2xl text-slate-800">
+        <h2 class="uth-display font-bold text-lg sm:text-2xl text-slate-800">
             Dashboard Mahasiswa
         </h2>
     </x-slot>
 
-    <div class="py-8">
-        <div class="max-w-7xl mx-auto px-6">
+    <div class="py-6 sm:py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
             {{-- Sapaan --}}
             <div class="relative overflow-hidden bg-gradient-to-r from-indigo-600 to-violet-600 rounded-2xl text-white p-6 mb-8 shadow-lg shadow-indigo-100">
