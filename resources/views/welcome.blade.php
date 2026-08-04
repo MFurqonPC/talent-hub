@@ -244,8 +244,10 @@
                 ];
             @endphp
             @foreach ($features as $f)
-                @php($gc = $groupClasses[$f['groupColor']])
-                <div class="uth-reveal border border-slate-200 rounded-xl p-6 bg-white hover:shadow-lg hover:shadow-slate-200/60 hover:-translate-y-0.5 transition-all">
+            @php
+                $gc = $groupClasses[$f['groupColor']];
+            @endphp
+            <div class="uth-reveal border border-slate-200 rounded-xl p-6 bg-white hover:shadow-lg hover:shadow-slate-200/60 hover:-translate-y-0.5 transition-all">
                     <div class="flex items-center justify-between mb-4">
                         <div class="w-11 h-11 rounded-lg {{ $gc['icon'] }} flex items-center justify-center">
                             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
