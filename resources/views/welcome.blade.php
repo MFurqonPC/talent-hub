@@ -35,8 +35,12 @@
     {{-- Hero --}}
     <section class="bg-gradient-to-b from-indigo-50 to-white">
         <div class="max-w-4xl mx-auto px-6 py-16 sm:py-24 text-center">
-            <span class="inline-block bg-indigo-100 text-indigo-700 text-xs font-semibold px-3 py-1 rounded-full mb-5">
-                🎓 Platform Talenta Mahasiswa
+            <span class="inline-flex items-center gap-1.5 bg-indigo-100 text-indigo-700 text-xs font-semibold px-3 py-1 rounded-full mb-5">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                    <path d="M6 12v5c0 2 3 3 6 3s6-1 6-3v-5"/>
+                </svg>
+                Platform Talenta Mahasiswa
             </span>
             <h1 class="text-3xl sm:text-5xl font-bold text-gray-900 leading-tight">
                 Petakan, Kembangkan, dan<br class="hidden sm:block">
@@ -67,17 +71,45 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             @php
                 $features = [
-                    ['icon' => '🎯', 'title' => 'Skill & Sertifikat', 'desc' => 'Ajukan skill, sertifikat, dan portofolio untuk diverifikasi admin, dapatkan poin.'],
-                    ['icon' => '🏆', 'title' => 'Leaderboard', 'desc' => 'Pantau ranking mahasiswa paling aktif dan berprestasi di kampusmu.'],
-                    ['icon' => '🎁', 'title' => 'Reward Menarik', 'desc' => 'Tukarkan poin yang terkumpul dengan reward dari kampus.'],
-                    ['icon' => '✨', 'title' => 'AI Recommendation', 'desc' => 'Dapatkan rekomendasi opportunity yang sesuai dengan skill kamu secara otomatis.'],
-                    ['icon' => '📋', 'title' => 'Talent Profile', 'desc' => 'Tampilkan profil profesionalmu lengkap dengan pencapaian yang terverifikasi.'],
-                    ['icon' => '🔍', 'title' => 'Ditemukan Kampus', 'desc' => 'Admin & unit kegiatan mahasiswa bisa menemukanmu berdasarkan skill yang dibutuhkan.'],
+                    [
+                        'icon' => '<path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm0 5v5l4 2"/>',
+                        'title' => 'Skill & Sertifikat',
+                        'desc' => 'Ajukan skill, sertifikat, dan portofolio untuk diverifikasi admin, dapatkan poin.',
+                    ],
+                    [
+                        'icon' => '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+                        'title' => 'Leaderboard',
+                        'desc' => 'Pantau ranking mahasiswa paling aktif dan berprestasi di kampusmu.',
+                    ],
+                    [
+                        'icon' => '<path d="M20 12v9H4v-9"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7Z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7Z"/>',
+                        'title' => 'Reward Menarik',
+                        'desc' => 'Tukarkan poin yang terkumpul dengan reward dari kampus.',
+                    ],
+                    [
+                        'icon' => '<path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/>',
+                        'title' => 'AI Recommendation',
+                        'desc' => 'Dapatkan rekomendasi opportunity yang sesuai dengan skill kamu secara otomatis.',
+                    ],
+                    [
+                        'icon' => '<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 3v2a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1V3"/><path d="M9 12h6M9 16h6"/>',
+                        'title' => 'Talent Profile',
+                        'desc' => 'Tampilkan profil profesionalmu lengkap dengan pencapaian yang terverifikasi.',
+                    ],
+                    [
+                        'icon' => '<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>',
+                        'title' => 'Ditemukan Kampus',
+                        'desc' => 'Admin & unit kegiatan mahasiswa bisa menemukanmu berdasarkan skill yang dibutuhkan.',
+                    ],
                 ];
             @endphp
             @foreach ($features as $f)
                 <div class="border border-gray-100 rounded-xl p-6 hover:shadow-md transition-shadow">
-                    <div class="text-3xl mb-3">{{ $f['icon'] }}</div>
+                    <div class="w-11 h-11 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center mb-3">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            {!! $f['icon'] !!}
+                        </svg>
+                    </div>
                     <h3 class="font-semibold text-gray-800 mb-1">{{ $f['title'] }}</h3>
                     <p class="text-gray-500 text-sm">{{ $f['desc'] }}</p>
                 </div>
