@@ -117,6 +117,50 @@
         </div>
     </section>
 
+    {{-- Tentang / Latar belakang --}}
+    <section class="bg-gray-50 border-y border-gray-100">
+        <div class="max-w-4xl mx-auto px-6 py-16">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10 items-start">
+                <div class="md:col-span-2 space-y-4">
+                    <span class="inline-flex items-center gap-1.5 bg-indigo-100 text-indigo-700 text-xs font-semibold px-3 py-1 rounded-full">
+                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M8 21h8M12 17v4"/>
+                            <path d="M7 4h10v6a5 5 0 0 1-10 0V4Z"/>
+                            <path d="M7 6H4a1 1 0 0 0-1 1 4 4 0 0 0 4 4"/>
+                            <path d="M17 6h3a1 1 0 0 1 1 1 4 4 0 0 1-4 4"/>
+                        </svg>
+                        Tentang Project Ini
+                    </span>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">
+                        Dibangun untuk TopRank Logic AI Development #3
+                    </h2>
+                    <p class="text-gray-500 leading-relaxed">
+                        University Talent Hub dikembangkan sebagai Minimum Viable Product (MVP) untuk menjawab
+                        study case pada kompetisi <span class="font-medium text-gray-700">TopRank Logic AI Development #3</span>:
+                        membangun ekosistem talenta mahasiswa berbasis gamifikasi. Platform ini dirancang untuk
+                        membantu perguruan tinggi memetakan, mengembangkan, dan mempertemukan talenta mahasiswa
+                        dengan berbagai peluang — lengkap dengan sistem verifikasi, poin, leaderboard, reward,
+                        hingga rekomendasi berbasis AI.
+                    </p>
+                </div>
+                <div class="bg-white rounded-xl shadow p-5 space-y-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-11 h-11 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-semibold text-sm">
+                            MF
+                        </div>
+                        <div>
+                            <p class="font-semibold text-gray-800 text-sm">Mohammad Furqon Putra Choir</p>
+                            <p class="text-gray-500 text-xs">D3 Teknik Informatika</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-400 text-xs leading-relaxed">
+                        Dikembangkan sebagai peserta pada kompetisi TopRank Logic AI Development #3.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     {{-- CTA bawah --}}
     <section class="bg-gradient-to-br from-indigo-600 to-purple-700 text-white">
         <div class="max-w-3xl mx-auto px-6 py-14 text-center">
@@ -131,7 +175,7 @@
 
     {{-- Footer --}}
     <footer class="text-center py-6 text-gray-400 text-xs">
-        &copy; {{ date('Y') }} University Talent Hub. All rights reserved.
+        &copy; {{ date('Y') }} University Talent Hub. Dibuat oleh Mohammad Furqon Putra Choir untuk TopRank Logic AI Development #3.
     </footer>
 
 </body>
