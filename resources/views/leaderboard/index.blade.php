@@ -27,7 +27,12 @@
                     <div class="text-center -mt-4">
                         @if ($first)
                             <div class="bg-white rounded-xl shadow-lg p-4 pb-6 border-2 border-yellow-400">
-                                <span class="text-2xl">🏆</span>
+                                <svg class="w-7 h-7 mx-auto text-yellow-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M8 21h8M12 17v4"/>
+                                    <path d="M7 4h10v6a5 5 0 0 1-10 0V4Z"/>
+                                    <path d="M7 6H4a1 1 0 0 0-1 1 4 4 0 0 0 4 4"/>
+                                    <path d="M17 6h3a1 1 0 0 1 1 1 4 4 0 0 1-4 4"/>
+                                </svg>
                                 <img src="{{ $first->profile?->photo ? Storage::url($first->profile->photo) : 'https://ui-avatars.com/api/?name='.urlencode($first->name).'&background=f59e0b&color=fff' }}"
                                     class="w-16 h-16 rounded-full mx-auto object-cover border-2 border-yellow-400 mt-1">
                                 <p class="font-semibold text-gray-800 text-sm mt-2 truncate">{{ $first->name }}</p>
@@ -44,7 +49,7 @@
                                 <img src="{{ $third->profile?->photo ? Storage::url($third->profile->photo) : 'https://ui-avatars.com/api/?name='.urlencode($third->name).'&background=b45309&color=fff' }}"
                                     class="w-14 h-14 rounded-full mx-auto object-cover border-2 border-amber-600">
                                 <p class="font-semibold text-gray-800 text-sm mt-2 truncate">{{ $third->name }}</p>
-                                <p class="text-gray-500 text-xs">{{ $third->points }} pts</p>
+                                <p class="text-gray-500 text-xs">{{ $third->points }}</p>
                             </div>
                             <div class="bg-amber-600 text-white font-bold text-lg rounded-b-lg py-2">3</div>
                         @endif
