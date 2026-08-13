@@ -1,17 +1,17 @@
-<nav x-data="{ open: false }" class="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-40">
+<nav x-data="{ open: false }" class="bg-white/90 backdrop-blur border-b border-slate-100 sticky top-0 z-40">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             <div class="flex">
                 {{-- Logo / Brand --}}
                 <div class="shrink-0 flex items-center gap-2">
                     <a href="{{ auth()->user()->role === 'admin' ? route('admin.dashboard') : route('mahasiswa.profile.edit') }}" class="flex items-center gap-2">
-                        <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-white">
+                        <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center text-white">
                             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M12 3L1 8.5L12 14L21 9.7V16.5H23V8.5L12 3Z" fill="currentColor"/>
                                 <path d="M5 11.5V16.5C5 16.5 7.5 19 12 19C16.5 19 19 16.5 19 16.5V11.5L12 15L5 11.5Z" fill="currentColor" opacity="0.7"/>
                             </svg>
                         </div>
-                        <span class="font-semibold text-gray-800 hidden sm:inline">University Talent Hub</span>
+                        <span class="uth-display font-semibold text-slate-800 hidden sm:inline">University Talent Hub</span>
                     </a>
                 </div>
 
@@ -38,23 +38,29 @@
             {{-- Right side: points badge + user dropdown --}}
             <div class="hidden lg:flex lg:items-center lg:gap-4">
                 @if (auth()->user()->role === 'mahasiswa')
-                    <div class="flex items-center gap-1.5 bg-indigo-50 text-indigo-700 text-sm font-semibold px-3 py-1.5 rounded-full">
-                        <span>⭐</span> {{ auth()->user()->points }} pts
+                    <div class="flex items-center gap-1.5 bg-amber-50 text-amber-600 text-sm font-semibold px-3 py-1.5 rounded-full">
+                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+                        </svg>
+                        {{ auth()->user()->points }} pts
                     </div>
                 @endif
 
                 <div class="relative" x-data="{ userMenu: false }">
                     <button @click="userMenu = !userMenu" @click.away="userMenu = false"
-                        class="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900">
+                        class="flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900 rounded-lg px-2 py-1.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
+                        <span class="w-7 h-7 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs font-semibold uth-display">
+                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                        </span>
                         <span>{{ auth()->user()->name }}</span>
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                     </button>
                     <div x-show="userMenu" x-cloak x-transition
-                        class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-1">
-                        <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Pengaturan Akun</a>
+                        class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-slate-100 py-1 overflow-hidden">
+                        <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">Pengaturan Akun</a>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-                            <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50">Logout</button>
+                            <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">Logout</button>
                         </form>
                     </div>
                 </div>
@@ -63,11 +69,14 @@
             {{-- Mobile hamburger --}}
             <div class="flex items-center lg:hidden">
                 @if (auth()->user()->role === 'mahasiswa')
-                    <div class="flex items-center gap-1 bg-indigo-50 text-indigo-700 text-xs font-semibold px-2.5 py-1 rounded-full mr-2">
-                        ⭐ {{ auth()->user()->points }}
+                    <div class="flex items-center gap-1 bg-amber-50 text-amber-600 text-xs font-semibold px-2.5 py-1 rounded-full mr-2">
+                        <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+                        </svg>
+                        {{ auth()->user()->points }} pts
                     </div>
                 @endif
-                <button @click="open = !open" class="p-2 text-gray-500 hover:text-gray-700">
+                <button @click="open = !open" class="p-2 text-slate-500 hover:text-slate-700 rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
                     <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path x-show="!open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         <path x-show="open" x-cloak stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -78,7 +87,7 @@
     </div>
 
     {{-- Mobile menu --}}
-    <div x-show="open" x-cloak x-transition class="lg:hidden border-t border-gray-100 bg-white">
+    <div x-show="open" x-cloak x-transition class="lg:hidden border-t border-slate-100 bg-white">
         <div class="px-4 py-3 space-y-1">
             @if (auth()->user()->role === 'admin')
                 <x-nav-link-uth mobile :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">Dashboard</x-nav-link-uth>
@@ -95,8 +104,8 @@
                 <x-nav-link-uth mobile :href="route('mahasiswa.rewards.index')" :active="request()->routeIs('mahasiswa.rewards.*')">Reward</x-nav-link-uth>
                 <x-nav-link-uth mobile :href="route('mahasiswa.recommendations.index')" :active="request()->routeIs('mahasiswa.recommendations.*')">Rekomendasi</x-nav-link-uth>
             @endif
-            <div class="border-t border-gray-100 pt-2 mt-2">
-                <div class="px-3 py-1 text-xs text-gray-400">{{ auth()->user()->name }}</div>
+            <div class="border-t border-slate-100 pt-2 mt-2">
+                <div class="px-3 py-1 text-xs text-slate-400">{{ auth()->user()->name }}</div>
                 <x-nav-link-uth mobile :href="route('profile.edit')" :active="false">Pengaturan Akun</x-nav-link-uth>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf

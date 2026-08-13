@@ -1,21 +1,21 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="uth-display font-bold text-lg sm:text-xl text-slate-800 leading-tight">
             {{ __('Skill Saya') }}
         </h2>
     </x-slot>
 
-    <div class="py-8" x-data="{ showModal: false, editing: null, editForm: {} }">
-        <div class="max-w-5xl mx-auto sm:px-6 lg:px-8 space-y-6">
+    <div class="py-6 sm:py-8" x-data="{ showModal: false, editing: null, editForm: {} }">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
 
             {{-- Notifikasi --}}
             @if (session('success'))
-                <div class="bg-green-100 border border-green-300 text-green-800 px-4 py-3 rounded-lg">
+                <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-xl text-sm">
                     {{ session('success') }}
                 </div>
             @endif
             @if ($errors->any())
-                <div class="bg-red-100 border border-red-300 text-red-800 px-4 py-3 rounded-lg">
+                <div class="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-xl text-sm">
                     <ul class="list-disc list-inside">
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
@@ -25,19 +25,28 @@
             @endif
 
             {{-- Tombol tambah --}}
-            <div class="flex justify-between items-center">
-                <p class="text-gray-600 text-sm">Kelola daftar skill kamu. Skill baru akan berstatus
-                    <span class="font-medium text-yellow-600">Pending</span> sampai diverifikasi admin.</p>
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                <p class="text-slate-500 text-sm">Kelola daftar skill kamu. Skill baru akan berstatus
+                    <span class="font-medium text-amber-600">Pending</span> sampai diverifikasi admin.</p>
                 <button @click="showModal = true; editing = null"
-                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium shadow">
-                    + Tambah Skill
+                    class="inline-flex items-center justify-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-lg text-sm font-semibold shadow-sm shadow-indigo-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 whitespace-nowrap">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+                    Tambah Skill
                 </button>
             </div>
 
-            {{-- Tabel skill --}}
-            <div class="bg-white shadow rounded-xl overflow-x-auto">
+            @php
+                $skillBadge = [
+                    'pending' => 'bg-amber-100 text-amber-700',
+                    'approved' => 'bg-green-100 text-green-700',
+                    'rejected' => 'bg-red-100 text-red-700',
+                ];
+            @endphp
+
+            {{-- Tabel skill: desktop --}}
+            <div class="hidden sm:block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-x-auto">
                 <table class="min-w-full text-sm text-left">
-                    <thead class="bg-gray-50 text-gray-600 uppercase text-xs">
+                    <thead class="bg-slate-50 text-slate-600 uppercase text-xs">
                         <tr>
                             <th class="px-4 py-3">Nama Skill</th>
                             <th class="px-4 py-3">Level</th>
@@ -47,32 +56,25 @@
                             <th class="px-4 py-3">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100">
+                    <tbody class="divide-y divide-slate-100">
                         @forelse ($skills as $skill)
                             <tr>
-                                <td class="px-4 py-3 font-medium text-gray-800">{{ $skill->skill_name }}</td>
-                                <td class="px-4 py-3 text-gray-600">{{ $skill->level ?? '-' }}</td>
+                                <td class="px-4 py-3 font-medium text-slate-800">{{ $skill->skill_name }}</td>
+                                <td class="px-4 py-3 text-slate-600">{{ $skill->level ?? '-' }}</td>
                                 <td class="px-4 py-3">
                                     @if ($skill->evidence_file)
                                         <a href="{{ Storage::url($skill->evidence_file) }}" target="_blank"
                                             class="text-indigo-600 hover:underline">Lihat File</a>
                                     @else
-                                        <span class="text-gray-400">-</span>
+                                        <span class="text-slate-400">-</span>
                                     @endif
                                 </td>
                                 <td class="px-4 py-3">
-                                    @php
-                                        $badge = [
-                                            'pending' => 'bg-yellow-100 text-yellow-700',
-                                            'approved' => 'bg-green-100 text-green-700',
-                                            'rejected' => 'bg-red-100 text-red-700',
-                                        ][$skill->status];
-                                    @endphp
-                                    <span class="px-2 py-1 rounded-full text-xs font-medium {{ $badge }}">
+                                    <span class="px-2 py-1 rounded-full text-xs font-medium {{ $skillBadge[$skill->status] }}">
                                         {{ ucfirst($skill->status) }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-3 font-semibold text-gray-800">{{ $skill->point_value }}</td>
+                                <td class="px-4 py-3 font-semibold text-slate-800">{{ $skill->point_value }}</td>
                                 <td class="px-4 py-3">
                                     @if ($skill->status === 'pending')
                                         <div class="flex items-center gap-3">
@@ -89,13 +91,13 @@
                                             </form>
                                         </div>
                                     @else
-                                        <span class="text-gray-400 text-xs">-</span>
+                                        <span class="text-slate-400 text-xs">-</span>
                                     @endif
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="px-4 py-6 text-center text-gray-400">
+                                <td colspan="6" class="px-4 py-6 text-center text-slate-400">
                                     Belum ada skill yang diajukan.
                                 </td>
                             </tr>
@@ -103,26 +105,65 @@
                     </tbody>
                 </table>
             </div>
+
+            {{-- Card list: mobile --}}
+            <div class="sm:hidden space-y-3">
+                @forelse ($skills as $skill)
+                    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
+                        <div class="flex justify-between items-start gap-2">
+                            <div>
+                                <p class="font-semibold text-slate-800">{{ $skill->skill_name }}</p>
+                                <p class="text-slate-500 text-xs">{{ $skill->level ?? 'Level belum diisi' }}</p>
+                            </div>
+                            <span class="px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap {{ $skillBadge[$skill->status] }}">
+                                {{ ucfirst($skill->status) }}
+                            </span>
+                        </div>
+                        <div class="flex items-center justify-between mt-3 pt-3 border-t border-slate-100 text-sm">
+                            <span class="font-semibold text-slate-800">{{ $skill->point_value }} poin</span>
+                            @if ($skill->evidence_file)
+                                <a href="{{ Storage::url($skill->evidence_file) }}" target="_blank" class="text-indigo-600 text-xs">Lihat File</a>
+                            @endif
+                        </div>
+                        @if ($skill->status === 'pending')
+                            <div class="flex items-center gap-4 mt-3">
+                                <button
+                                    @click="showModal = true; editing = {{ $skill->id }}; editForm = { skill_name: {{ Js::from($skill->skill_name) }}, level: {{ Js::from($skill->level) }} }"
+                                    class="text-indigo-600 text-xs font-medium">Edit</button>
+                                <form action="{{ route('mahasiswa.skills.destroy', $skill) }}" method="POST"
+                                    onsubmit="return confirm('Batalkan pengajuan skill ini?')">
+                                    @csrf @method('DELETE')
+                                    <button class="text-red-600 text-xs font-medium">Batalkan</button>
+                                </form>
+                            </div>
+                        @endif
+                    </div>
+                @empty
+                    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 text-center text-slate-400 text-sm">
+                        Belum ada skill yang diajukan.
+                    </div>
+                @endforelse
+            </div>
         </div>
 
         {{-- Modal tambah/edit skill --}}
         <div x-show="showModal" x-cloak
-            class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-            <div @click.away="showModal = false" class="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4" x-text="editing ? 'Edit Skill' : 'Tambah Skill Baru'"></h3>
+            class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
+            <div @click.away="showModal = false" class="bg-white rounded-t-2xl sm:rounded-2xl shadow-lg w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
+                <h3 class="uth-display text-lg font-bold text-slate-800 mb-4" x-text="editing ? 'Edit Skill' : 'Tambah Skill Baru'"></h3>
 
                 {{-- Form Tambah --}}
                 <form x-show="!editing" action="{{ route('mahasiswa.skills.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
                     @csrf
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Nama Skill</label>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Nama Skill</label>
                         <input type="text" name="skill_name" required
-                            class="w-full rounded-lg border-gray-300 focus:ring-indigo-500 focus:border-indigo-500"
+                            class="w-full rounded-lg border-slate-300 focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500"
                             placeholder="Contoh: UI/UX Design">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Level (opsional)</label>
-                        <select name="level" class="w-full rounded-lg border-gray-300 focus:ring-indigo-500 focus:border-indigo-500">
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Level (opsional)</label>
+                        <select name="level" class="w-full rounded-lg border-slate-300 focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500">
                             <option value="">-- Pilih Level --</option>
                             <option value="Beginner">Beginner</option>
                             <option value="Intermediate">Intermediate</option>
@@ -130,16 +171,16 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Bukti Pendukung (opsional)</label>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Bukti Pendukung (opsional)</label>
                         <input type="file" name="evidence_file" accept=".pdf,.jpg,.jpeg,.png"
-                            class="w-full text-sm text-gray-600">
-                        <p class="text-xs text-gray-400 mt-1">Format PDF/JPG/PNG, maks 2MB.</p>
+                            class="w-full text-sm text-slate-600 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-indigo-50 file:text-indigo-600 file:font-medium hover:file:bg-indigo-100">
+                        <p class="text-xs text-slate-400 mt-1">Format PDF/JPG/PNG, maks 2MB.</p>
                     </div>
-                    <div class="flex justify-end gap-2 pt-2">
+                    <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 pt-2">
                         <button type="button" @click="showModal = false"
-                            class="px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-100 text-sm">Batal</button>
+                            class="px-4 py-2.5 rounded-lg text-slate-600 hover:bg-slate-100 text-sm font-medium">Batal</button>
                         <button type="submit"
-                            class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium">
+                            class="px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-sm shadow-indigo-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
                             Ajukan Skill
                         </button>
                     </div>
@@ -151,13 +192,13 @@
                         @csrf
                         @method('PUT')
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Nama Skill</label>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Nama Skill</label>
                             <input type="text" name="skill_name" x-model="editForm.skill_name" required
-                                class="w-full rounded-lg border-gray-300 focus:ring-indigo-500 focus:border-indigo-500">
+                                class="w-full rounded-lg border-slate-300 focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Level (opsional)</label>
-                            <select name="level" x-model="editForm.level" class="w-full rounded-lg border-gray-300 focus:ring-indigo-500 focus:border-indigo-500">
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Level (opsional)</label>
+                            <select name="level" x-model="editForm.level" class="w-full rounded-lg border-slate-300 focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500">
                                 <option value="">-- Pilih Level --</option>
                                 <option value="Beginner">Beginner</option>
                                 <option value="Intermediate">Intermediate</option>
@@ -165,16 +206,16 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Ganti Bukti Pendukung (opsional)</label>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Ganti Bukti Pendukung (opsional)</label>
                             <input type="file" name="evidence_file" accept=".pdf,.jpg,.jpeg,.png"
-                                class="w-full text-sm text-gray-600">
-                            <p class="text-xs text-gray-400 mt-1">Kosongkan kalau tidak ingin mengganti file lama.</p>
+                                class="w-full text-sm text-slate-600 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-indigo-50 file:text-indigo-600 file:font-medium hover:file:bg-indigo-100">
+                            <p class="text-xs text-slate-400 mt-1">Kosongkan kalau tidak ingin mengganti file lama.</p>
                         </div>
-                        <div class="flex justify-end gap-2 pt-2">
+                        <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 pt-2">
                             <button type="button" @click="showModal = false"
-                                class="px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-100 text-sm">Batal</button>
+                                class="px-4 py-2.5 rounded-lg text-slate-600 hover:bg-slate-100 text-sm font-medium">Batal</button>
                             <button type="submit"
-                                class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium">
+                                class="px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-sm shadow-indigo-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
                                 Update Skill
                             </button>
                         </div>
